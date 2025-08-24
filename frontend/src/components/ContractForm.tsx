@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import contractService from '../services/contractService';
-import CreatableSelect from 'react-select/creatable';
+import { TextField, Button, Box, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 interface Task {
   name: string;
@@ -112,47 +113,58 @@ export const ContractForm: React.FC<ContractFormProps> = ({ onContractCreated, c
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="mb-3">
-        <label htmlFor="name" className="form-label">Contract Name</label>
-        <input type="text" className="form-control" id="name" value={name} onChange={e => setName(e.target.value)} required />
-      </div>
+    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
+      <TextField
+        fullWidth
+        label="Contract Name"
+        variant="outlined"
+        value={name}
+        onChange={e => setName(e.target.value)}
+        required
+        sx={{ mb: 2 }}
+      />
 
-      <div className="mb-3">
-        <label className="form-label">Tasks</label>
-        {tasks.map((task, index) => (
-          <div className="row mb-2" key={index}>
-            <div className="col">
-              <CreatableSelect
-                isClearable
-                options={taskSuggestions}
-                value={{ value: task.name, label: task.name }}
-                onChange={selectedOption => handleTaskChange(index, 'name', selectedOption ? selectedOption.value : '')}
-                placeholder="Select or type a task"
-              />
-            </div>
-            <div className="col">
-              <input type="number" className="form-control" placeholder="Amount" value={task.amount} onChange={e => handleTaskChange(index, 'amount', parseFloat(e.target.value))} required />
-            </div>
-            <div className="col-auto">
-              <button type="button" className="btn btn-danger" onClick={() => removeTask(index)}>Remove</button>
-            </div>
-          </div>
-        ))}
-        <button type="button" className="btn btn-primary" onClick={addTask}>Add Task</button>
-      </div>
+      <Typography variant="h6" gutterBottom>Tasks</Typography>
+      {tasks.map((task, index) => (
+        <Box key={index} sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
+          <CreatableSelect
+            isClearable
+            options={taskSuggestions}
+            value={{ value: task.name, label: task.name }}
+            onChange={selectedOption => handleTaskChange(index, 'name', selectedOption ? selectedOption.value : '')}
+            placeholder="Select or type a task"
+            styles={{
+              container: (provided) => ({ ...provided, flexGrow: 1 }),
+            }}
+          />
+          <TextField
+            type="number"
+            label="Amount"
+            variant="outlined"
+            value={task.amount}
+            onChange={e => handleTaskChange(index, 'amount', parseFloat(e.target.value))}
+            required
+            sx={{ width: 120 }}
+          />
+          <IconButton color="error" onClick={() => removeTask(index)}>
+            <DeleteIcon />
+          </IconButton>
+        </Box>
+      ))}
+      <Button variant="outlined" onClick={addTask} sx={{ mb: 3 }}>Add Task</Button>
 
-      <div className="mb-3">
-        <label htmlFor="tags" className="form-label">Tags</label>
-        <CreatableSelect
-          isMulti
-          options={tagSuggestions}
-          value={tags.map(tag => ({ value: tag, label: tag }))}
-          onChange={selectedOptions => setTags(selectedOptions.map(option => option.value))}
-        />
-      </div>
+      <Typography variant="h6" gutterBottom>Tags</Typography>
+      <CreatableSelect
+        isMulti
+        options={tagSuggestions}
+        value={tags.map(tag => ({ value: tag, label: tag }))}
+        onChange={selectedOptions => setTags(selectedOptions.map(option => option.value))}
+        sx={{ mb: 3 }}
+      />
 
-      <button type="submit" className="btn btn-success">{contract ? 'Update Contract' : 'Create Contract'}</button>
-    </form>
+      <Button type="submit" variant="contained" color="primary">
+        {contract ? 'Update Contract' : 'Create Contract'}
+      </Button>
+    </Box>
   );
 };

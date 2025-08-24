@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Typography, Box, Grid, Card, CardContent, List, ListItem, ListItemText, Chip } from '@mui/material';
 import contractService from '../services/contractService';
 
 interface SummaryData {
@@ -25,58 +26,58 @@ export const Summary: React.FC = () => {
   }, []);
 
   if (!summary) {
-    return <div>Loading summary...</div>;
+    return <Box sx={{ mt: 4, textAlign: 'center' }}>Loading summary...</Box>;
   }
 
   return (
-    <div className="container mt-4">
-      <h1>Contract Summary</h1>
-      <div className="row">
-        <div className="col-md-6 mb-4">
-          <div className="card">
-            <div className="card-body">
-              <h5 className="card-title">Total Contracts</h5>
-              <p className="card-text display-4">{summary.total_contracts}</p>
-            </div>
-          </div>
-        </div>
-        <div className="col-md-6 mb-4">
-          <div className="card">
-            <div className="card-body">
-              <h5 className="card-title">Total Amount</h5>
-              <p className="card-text display-4">₹{summary.total_amount.toFixed(2)}</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <Box sx={{ mt: 4, mx: 'auto', maxWidth: 800 }}>
+      <Typography variant="h4" component="h1" gutterBottom>Contract Summary</Typography>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={6}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="h5" component="div">Total Contracts</Typography>
+              <Typography variant="h3" color="primary">{summary.total_contracts}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <Card variant="outlined">
+            <CardContent>
+              <Typography variant="h5" component="div">Total Amount</Typography>
+              <Typography variant="h3" color="primary">₹{summary.total_amount.toFixed(2)}</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
-      <div className="card mt-4">
-        <div className="card-body">
-          <h5 className="card-title">Contracts by Tags</h5>
-          <ul className="list-group list-group-flush">
+      <Card variant="outlined" sx={{ mt: 4 }}>
+        <CardContent>
+          <Typography variant="h5" component="div" gutterBottom>Contracts by Tags</Typography>
+          <List>
             {Object.entries(summary.contracts_by_tags).map(([tag, count]) => (
-              <li className="list-group-item d-flex justify-content-between align-items-center" key={tag}>
-                {tag}
-                <span className="badge bg-primary rounded-pill">{count}</span>
-              </li>
+              <ListItem key={tag} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee' }}>
+                <ListItemText primary={tag} />
+                <Chip label={count} color="primary" />
+              </ListItem>
             ))}
-          </ul>
-        </div>
-      </div>
+          </List>
+        </CardContent>
+      </Card>
 
-      <div className="card mt-4">
-        <div className="card-body">
-          <h5 className="card-title">Contracts by Tasks</h5>
-          <ul className="list-group list-group-flush">
+      <Card variant="outlined" sx={{ mt: 4 }}>
+        <CardContent>
+          <Typography variant="h5" component="div" gutterBottom>Contracts by Tasks</Typography>
+          <List>
             {Object.entries(summary.contracts_by_tasks).map(([task, count]) => (
-              <li className="list-group-item d-flex justify-content-between align-items-center" key={task}>
-                {task}
-                <span className="badge bg-primary rounded-pill">{count}</span>
-              </li>
+              <ListItem key={task} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee' }}>
+                <ListItemText primary={task} />
+                <Chip label={count} color="primary" />
+              </ListItem>
             ))}
-          </ul>
-        </div>
-      </div>
-    </div>
+          </List>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };

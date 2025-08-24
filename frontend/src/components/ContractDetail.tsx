@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import contractService from '../services/contractService';
-import { ContractForm } from './ContractForm';
+import { Typography, Button, Box, List, ListItem, ListItemText, Chip, Modal, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface Task {
   name: string;
@@ -49,51 +50,70 @@ export const ContractDetail: React.FC = () => {
   };
 
   if (!contract) {
-    return <div>Loading...</div>;
+    return <Box sx={{ mt: 4, textAlign: 'center' }}>Loading...</Box>;
   }
 
   return (
-    <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center">
-        <h1>{contract.name}</h1>
-        <div>
-          <button className="btn btn-primary me-2" onClick={() => setShowEditModal(true)}>Edit</button>
-          <button className="btn btn-danger" onClick={handleDelete}>Delete</button>
-        </div>
-      </div>
-      <h3>Total Amount: ${contract.total_amount.toFixed(2)}</h3>
-      <hr />
-      <h4>Tasks</h4>
-      <ul className="list-group">
+    <Box sx={{ mt: 4, mx: 'auto', maxWidth: 800 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h4" component="h1">{contract.name}</Typography>
+        <Box>
+          <Button variant="contained" onClick={() => setShowEditModal(true)} sx={{ mr: 1 }}>Edit</Button>
+          <Button variant="outlined" color="error" onClick={handleDelete}>Delete</Button>
+        </Box>
+      </Box>
+      <Typography variant="h5" component="h2" sx={{ mb: 2 }}>Total Amount: ₹{contract.total_amount.toFixed(2)}</Typography>
+      <Typography variant="h6" component="h3" sx={{ mt: 3, mb: 1 }}>Tasks</Typography>
+      <List>
         {contract.tasks.map((task, index) => (
-          <li className="list-group-item d-flex justify-content-between align-items-center" key={index}>
-            {task.name}
-            <span className="badge bg-primary rounded-pill">₹{task.amount.toFixed(2)}</span>
-          </li>
+          <ListItem key={index} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee' }}>
+            <ListItemText primary={task.name} />
+            <Chip label={`₹${task.amount.toFixed(2)}`} color="primary" />
+          </ListItem>
         ))}
-      </ul>
-      <hr />
-      <h4>Tags</h4>
-      <div>
+      </List>
+      <Typography variant="h6" component="h3" sx={{ mt: 3, mb: 1 }}>Tags</Typography>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
         {contract.tags.map((tag, index) => (
-          <span className="badge bg-secondary me-2" key={index}>{tag}</span>
+          <Chip key={index} label={tag} color="secondary" />
         ))}
-      </div>
+      </Box>
 
-      {/* Modal for editing contract */}
-      <div className={`modal fade ${showEditModal ? 'show d-block' : ''}`} tabIndex={-1} style={{ backgroundColor: showEditModal ? 'rgba(0,0,0,0.5)' : '' }}>
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Edit Contract</h5>
-              <button type="button" className="btn-close" onClick={() => setShowEditModal(false)}></button>
-            </div>
-            <div className="modal-body">
-              <ContractForm onContractCreated={handleContractUpdated} contract={contract} showModal={showEditModal} />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+      <Modal
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        aria-labelledby="edit-modal-title"
+        aria-describedby="edit-modal-description"
+      >
+        <Box sx={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 400,
+          bgcolor: 'background.paper',
+          border: '2px solid #000',
+          boxShadow: 24,
+          p: 4,
+        }}>
+          <Typography id="edit-modal-title" variant="h6" component="h2">
+            Edit Contract
+            <IconButton
+              aria-label="close"
+              onClick={() => setShowEditModal(false)}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Typography>
+          <ContractForm onContractCreated={handleContractUpdated} contract={contract} showModal={showEditModal} />
+        </Box>
+      </Modal>
+    </Box>
   );
 };

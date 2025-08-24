@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import contractService from '../services/contractService';
-import { TextField, Button, Box, IconButton } from '@mui/material';
+import { TextField, Button, Box, IconButton, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CreatableSelect from 'react-select/creatable';
+import { ActionMeta, SingleValue } from 'react-select';
 
 interface Task {
   name: string;
@@ -131,10 +133,10 @@ export const ContractForm: React.FC<ContractFormProps> = ({ onContractCreated, c
             isClearable
             options={taskSuggestions}
             value={{ value: task.name, label: task.name }}
-            onChange={selectedOption => handleTaskChange(index, 'name', selectedOption ? selectedOption.value : '')}
+            onChange={(selectedOption: SingleValue<{ value: string; label: string; }>) => handleTaskChange(index, 'name', selectedOption ? selectedOption.value : '')}
             placeholder="Select or type a task"
             styles={{
-              container: (provided) => ({ ...provided, flexGrow: 1 }),
+              container: (provided: any) => ({ ...provided, flexGrow: 1 }),
             }}
           />
           <TextField
@@ -158,7 +160,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({ onContractCreated, c
         isMulti
         options={tagSuggestions}
         value={tags.map(tag => ({ value: tag, label: tag }))}
-        onChange={selectedOptions => setTags(selectedOptions.map(option => option.value))}
+        onChange={(selectedOptions: any) => setTags(selectedOptions.map((option: any) => option.value))}
         sx={{ mb: 3 }}
       />
 

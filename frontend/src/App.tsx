@@ -136,7 +136,8 @@ function App() {
 
       <Routes>
         <Route path="/" element={
-          <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Box sx={{ mt: 4, mx: 'auto', maxWidth: 800 }}>
+            <Grid container spacing={2} sx={{ mb: 4 }}>
             <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
@@ -180,6 +181,7 @@ function App() {
               onChange={(event, value) => handlePageChange(value)}
               color="primary"
             />
+          </Box>
           </Box>
         } />
         <Route path="/contracts/:contractId" element={<ContractDetail />} />

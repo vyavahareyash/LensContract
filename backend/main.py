@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, Body, HTTPException
-from backend.services.mongo_client import get_db
+from services.mongo_client import get_db
 from pymongo.database import Database
-from backend.schemas.contract import Contract
+from schemas.contract import Contract
 from typing import List, Dict, Optional
 from fastapi.middleware.cors import CORSMiddleware
 from bson import ObjectId

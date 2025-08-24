@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import contractService from '../services/contractService';
 import { Typography, Button, Box, List, ListItem, ListItemText, Chip, Modal, IconButton } from '@mui/material';

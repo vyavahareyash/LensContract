@@ -3,7 +3,7 @@ import contractService from '../services/contractService';
 import { TextField, Button, Box, IconButton, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CreatableSelect from 'react-select/creatable';
-import { ActionMeta, SingleValue } from 'react-select';
+import { SingleValue } from 'react-select';
 
 interface Task {
   name: string;
@@ -161,7 +161,6 @@ export const ContractForm: React.FC<ContractFormProps> = ({ onContractCreated, c
         options={tagSuggestions}
         value={tags.map(tag => ({ value: tag, label: tag }))}
         onChange={(selectedOptions: any) => setTags(selectedOptions.map((option: any) => option.value))}
-        sx={{ mb: 3 }}
       />
 
       <Button type="submit" variant="contained" color="primary">

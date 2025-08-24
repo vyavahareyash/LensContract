@@ -42,7 +42,7 @@ export const Summary: React.FC = () => {
           <div className="card">
             <div className="card-body">
               <h5 className="card-title">Total Amount</h5>
-              <p className="card-text display-4">${summary.total_amount.toFixed(2)}</p>
+              <p className="card-text display-4">₹{summary.total_amount.toFixed(2)}</p>
             </div>
           </div>
         </div>

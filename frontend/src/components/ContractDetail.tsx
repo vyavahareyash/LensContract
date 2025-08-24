@@ -74,7 +74,7 @@ export const ContractDetail: React.FC = () => {
         {contract.tasks.map((task, index) => (
           <li className="list-group-item d-flex justify-content-between align-items-center" key={index}>
             {task.name}
-            <span className="badge bg-primary rounded-pill">${task.amount.toFixed(2)}</span>
+            <span className="badge bg-primary rounded-pill">₹{task.amount.toFixed(2)}</span>
           </li>
         ))}
       </ul>

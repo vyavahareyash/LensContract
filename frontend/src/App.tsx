@@ -152,7 +152,7 @@ function App() {
                     <div className="card">
                       <div className="card-body">
                         <h5 className="card-title">{contract.name}</h5>
-                        <h6 className="card-subtitle mb-2 text-muted">Total Amount: ${contract.total_amount.toFixed(2)}</h6>
+                        <h6 className="card-subtitle mb-2 text-muted">Total Amount: ₹{contract.total_amount.toFixed(2)}</h6>
                       </div>
                     </div>
                   </Link>

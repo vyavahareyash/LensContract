@@ -4,6 +4,8 @@ import './App.css';
 import { ContractForm } from './components/ContractForm';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { ContractDetail } from './components/ContractDetail';
+import Select from 'react-select';
+import { Summary } from './components/Summary';
 
 interface Task {
   name: string;
@@ -24,11 +26,24 @@ function App() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(9); // Display 9 contracts per page
   const [totalContracts, setTotalContracts] = useState(0);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [tagOptions, setTagOptions] = useState<{ value: string; label: string; }[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const location = useLocation();
 
-  const fetchContracts = (page: number) => {
+  const fetchContracts = (page: number, tags: string[] = [], search: string = '') => {
     const skip = (page - 1) * itemsPerPage;
-    axios.get(`http://127.0.0.1:8000/contracts?skip=${skip}&limit=${itemsPerPage}`)
+    const params = new URLSearchParams();
+    params.append('skip', skip.toString());
+    params.append('limit', itemsPerPage.toString());
+    if (tags.length > 0) {
+      params.append('tags', tags.join(','));
+    }
+    if (search) {
+      params.append('search', search);
+    }
+
+    axios.get(`http://127.0.0.1:8000/contracts?${params.toString()}`)
       .then(response => {
         setContracts(response.data.contracts);
         setTotalContracts(response.data.total_count);
@@ -39,12 +54,40 @@ function App() {
       });
   };
 
+  const fetchTags = () => {
+    axios.get('http://127.0.0.1:8000/tags')
+      .then(response => {
+        setTagOptions(response.data.map((tag: string) => ({ value: tag, label: tag })));
+      })
+      .catch(error => {
+        console.error('There was an error fetching the tags!', error);
+        alert('Failed to fetch tags. Please try again later.');
+      });
+  };
+
   useEffect(() => {
-    fetchContracts(currentPage);
-  }, [currentPage, location]);
+    fetchTags();
+  }, []); // Fetch tags only once on mount
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset page to 1 when filters change
+    fetchContracts(1, selectedTags, searchTerm);
+  }, [selectedTags, searchTerm]);
+
+  useEffect(() => {
+    fetchContracts(currentPage, selectedTags, searchTerm);
+  }, [currentPage]);
+
+  useEffect(() => {
+    // This useEffect is for when navigating back to home page
+    // It will re-fetch contracts based on current filters
+    if (location.pathname === '/') {
+      fetchContracts(currentPage, selectedTags, searchTerm);
+    }
+  }, [location.pathname]);
 
   const handleContractCreated = () => {
-    fetchContracts(currentPage);
+    fetchContracts(currentPage, selectedTags, searchTerm);
     setShowModal(false);
   };
 
@@ -59,6 +102,14 @@ function App() {
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container-fluid">
           <Link className="navbar-brand" to="/">LensContract</Link>
+          <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+            <li className="nav-item">
+              <Link className="nav-link" to="/">Home</Link>
+            </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/summary">Summary</Link>
+            </li>
+          </ul>
           <button className="btn btn-primary" onClick={() => setShowModal(true)}>Create Contract</button>
         </div>
       </nav>
@@ -81,9 +132,22 @@ function App() {
       <Routes>
         <Route path="/" element={
           <div className="container mt-4">
+            <div className="row mb-4">
+              <div className="col-md-6">
+                <input type="text" className="form-control" placeholder="Search by name..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+              </div>
+              <div className="col-md-6">
+                <Select
+                  isMulti
+                  options={tagOptions}
+                  onChange={selectedOptions => setSelectedTags(selectedOptions.map(option => option.value))}
+                  placeholder="Filter by tags..."
+                />
+              </div>
+            </div>
             <div className="row">
               {contracts.map(contract => (
-                <div className="col-md-4 mb-4" key={contract.id}>
+                <div className="col-sm-6 col-md-4 col-lg-3 mb-4" key={contract.id}>
                   <Link to={`/contracts/${contract.id}`} className="card-link">
                     <div className="card">
                       <div className="card-body">
@@ -114,6 +178,7 @@ function App() {
           </div>
         } />
         <Route path="/contracts/:contractId" element={<ContractDetail />} />
+        <Route path="/summary" element={<Summary />} />
       </Routes>
     </div>
   );

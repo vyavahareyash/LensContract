@@ -2,9 +2,10 @@ from fastapi import FastAPI, Depends, Body, HTTPException
 from backend.services.mongo_client import get_db
 from pymongo.database import Database
 from backend.schemas.contract import Contract
-from typing import List, Dict
+from typing import List, Dict, Optional
 from fastapi.middleware.cors import CORSMiddleware
 from bson import ObjectId
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -67,10 +68,16 @@ def get_tags(db: Database = Depends(get_db)):
     return [tag["name"] for tag in tags]
 
 @app.get("/contracts")
-def get_contracts(db: Database = Depends(get_db), skip: int = 0, limit: int = 10):
-    total_count = db.contracts.count_documents({})
+def get_contracts(db: Database = Depends(get_db), skip: int = 0, limit: int = 10, tags: Optional[str] = None, search: Optional[str] = None):
+    query = {}
+    if tags:
+        query["tags"] = {"$in": tags.split(",")}
+    if search:
+        query["name"] = {"$regex": search, "$options": "i"}
+
+    total_count = db.contracts.count_documents(query)
     contracts = []
-    for contract in db.contracts.find().skip(skip).limit(limit):
+    for contract in db.contracts.find(query).skip(skip).limit(limit):
         contract["id"] = str(contract["_id"])
         del contract["_id"]
         contracts.append(contract)
@@ -100,3 +107,33 @@ def delete_contract(contract_id: str, db: Database = Depends(get_db)):
     if result.deleted_count == 1:
         return {"status": "ok"}
     raise HTTPException(status_code=404, detail="Contract not found")
+
+@app.get("/summary")
+def get_summary(db: Database = Depends(get_db)):
+    total_contracts = db.contracts.count_documents({})
+    total_amount_pipeline = [
+        {"$group": {"_id": None, "total_amount": {"$sum": "$total_amount"}}}
+    ]
+    total_amount_result = list(db.contracts.aggregate(total_amount_pipeline))
+    total_amount = total_amount_result[0]["total_amount"] if total_amount_result else 0
+
+    contracts_by_tags_pipeline = [
+        {"$unwind": "$tags"},
+        {"$group": {"_id": "$tags", "count": {"$sum": 1}}}
+    ]
+    contracts_by_tags_result = list(db.contracts.aggregate(contracts_by_tags_pipeline))
+    contracts_by_tags = {item["_id"]: item["count"] for item in contracts_by_tags_result}
+
+    contracts_by_tasks_pipeline = [
+        {"$unwind": "$tasks"},
+        {"$group": {"_id": "$tasks.name", "count": {"$sum": 1}}}
+    ]
+    contracts_by_tasks_result = list(db.contracts.aggregate(contracts_by_tasks_pipeline))
+    contracts_by_tasks = {item["_id"]: item["count"] for item in contracts_by_tasks_result}
+
+    return {
+        "total_contracts": total_contracts,
+        "total_amount": total_amount,
+        "contracts_by_tags": contracts_by_tags,
+        "contracts_by_tasks": contracts_by_tasks,
+    }

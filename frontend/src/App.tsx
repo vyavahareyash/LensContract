@@ -5,6 +5,7 @@ import { ContractForm } from './components/ContractForm';
 import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import { ContractDetail } from './components/ContractDetail';
 import { Login } from './components/Login';
+import { Register } from './components/Register';
 import { PrivateRoute } from './components/PrivateRoute';
 import { Summary } from './components/Summary';
 import { HomeContent } from './components/HomeContent';
@@ -40,7 +41,10 @@ function App() {
               <Button color="inherit" onClick={handleLogout}>Logout</Button>
             </>
           ) : (
-            <Button color="inherit" component={Link} to="/login">Login</Button>
+            <>
+              <Button color="inherit" component={Link} to="/login">Login</Button>
+              <Button color="inherit" component={Link} to="/register">Register</Button>
+            </>
           )}
         </Toolbar>
       </AppBar>
@@ -83,10 +87,11 @@ function App() {
 
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/" element={<PrivateRoute><HomeContent /></PrivateRoute>} />
         <Route path="/contracts/:contractId" element={<PrivateRoute><ContractDetail /></PrivateRoute>} />
         <Route path="/summary" element={<PrivateRoute><Summary /></PrivateRoute>} />
-        <Route path="*" element={<Login />} />
+        <Route path="*" element={<Register />} />
       </Routes>
     </div>
   );

@@ -7,7 +7,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pymongo.database import Database
 
 from auth import (ACCESS_TOKEN_EXPIRE_MINUTES, Token, User, authenticate_user,
-                    create_access_token, get_current_user, get_password_hash)
+                    create_access_token, get_current_user, get_password_hash, UserInDB)
 from services.mongo_client import get_db
 
 from routers import contracts, tasks, tags
@@ -41,6 +41,21 @@ app.add_middleware(
 app.include_router(contracts.router)
 app.include_router(tasks.router)
 app.include_router(tags.router)
+
+
+@app.post("/register", response_model=User)
+async def register_user(user: UserInDB):
+    hashed_password = get_password_hash(user.hashed_password) # user.hashed_password is actually the plain password here
+    if user.username in users_db:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    users_db[user.username] = {
+        "username": user.username,
+        "email": user.email,
+        "full_name": user.full_name,
+        "disabled": user.disabled,
+        "hashed_password": hashed_password,
+    }
+    return User(**users_db[user.username])
 
 
 @app.post("/token", response_model=Token)

@@ -2,3 +2,5 @@ fastapi
 uvicorn[standard]
 pymongo
 black
+python-jose[cryptography]
+passlib[bcrypt]

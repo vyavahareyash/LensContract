@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import contractService from '../services/contractService';
 import { ContractForm } from './ContractForm';
 
 interface Task {
@@ -22,30 +22,24 @@ export const ContractDetail: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
 
-  const fetchContract = () => {
-    axios.get(`http://127.0.0.1:8000/contracts/${contractId}`)
-      .then(response => {
-        setContract(response.data);
-      })
-      .catch(error => {
-        console.error('There was an error fetching the contract details!', error);
-      });
+  const fetchContract = async () => {
+    try {
+      const data = await contractService.getContractById(contractId as string);
+      setContract(data);
+    } catch (error) {
+      console.error('There was an error fetching the contract details!', error);
+    }
   };
 
-  useEffect(() => {
-    fetchContract();
-  }, [contractId]);
-
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete this contract?')) {
-      axios.delete(`http://127.0.0.1:8000/contracts/${contractId}`)
-        .then(() => {
-          navigate('/');
-        })
-        .catch(error => {
-          console.error('There was an error deleting the contract!', error);
-          alert('Failed to delete contract. Please try again later.');
-        });
+      try {
+        await contractService.deleteContract(contractId as string);
+        navigate('/');
+      } catch (error) {
+        console.error('There was an error deleting the contract!', error);
+        alert('Failed to delete contract. Please try again later.');
+      }
     }
   };
 

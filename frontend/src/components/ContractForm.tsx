@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import contractService from '../services/contractService';
 import CreatableSelect from 'react-select/creatable';
 
 interface Task {
@@ -30,14 +30,14 @@ export const ContractForm: React.FC<ContractFormProps> = ({ onContractCreated, c
 
   useEffect(() => {
     if (showModal) { // Only fetch suggestions when modal is shown
-      axios.get('http://127.0.0.1:8000/tasks').then(response => {
-        setTaskSuggestions(response.data.map((task: string) => ({ value: task, label: task })));
+      contractService.getTasks().then(data => {
+        setTaskSuggestions(data.map((task: string) => ({ value: task, label: task })));
       }).catch(error => {
         console.error('There was an error fetching task suggestions!', error);
         alert('Failed to fetch task suggestions.');
       });
-      axios.get('http://127.0.0.1:8000/tags').then(response => {
-        setTagSuggestions(response.data.map((tag: string) => ({ value: tag, label: tag })));
+      contractService.getTags().then(data => {
+        setTagSuggestions(data.map((tag: string) => ({ value: tag, label: tag })));
       }).catch(error => {
         console.error('There was an error fetching tag suggestions!', error);
         alert('Failed to fetch tag suggestions.');
@@ -88,15 +88,9 @@ export const ContractForm: React.FC<ContractFormProps> = ({ onContractCreated, c
     }
 
     const contractData = { name, tasks, tags };
-    const token = localStorage.getItem('access_token');
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    };
 
     if (contract) {
-      axios.put(`http://127.0.0.1:8000/contracts/${contract.id}`, contractData, config)
+      contractService.updateContract(contract.id, contractData)
         .then(() => {
           onContractCreated();
         })
@@ -104,7 +98,7 @@ export const ContractForm: React.FC<ContractFormProps> = ({ onContractCreated, c
           console.error('There was an error updating the contract!', error);
         });
     } else {
-      axios.post('http://127.0.0.1:8000/contracts', contractData, config)
+      contractService.createContract(contractData)
         .then(() => {
           onContractCreated();
           setName('');

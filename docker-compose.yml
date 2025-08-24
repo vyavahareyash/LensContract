@@ -18,6 +18,8 @@ services:
       - "8000:8000"
     environment:
       - MONGO_URI=mongodb://mongodb:27017/lenscontract # Connect to MongoDB service
+      - SECRET_KEY=your-super-secret-key # TODO: Change this to a strong, random key
+      - MONGO_DB_NAME=lens_contract_db # Example: Use a specific database name
     depends_on:
       - mongodb
     networks:

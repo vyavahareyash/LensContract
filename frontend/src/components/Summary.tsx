@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import contractService from '../services/contractService';
 
 interface SummaryData {
   total_contracts: number;
@@ -12,14 +12,16 @@ export const Summary: React.FC = () => {
   const [summary, setSummary] = useState<SummaryData | null>(null);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/summary')
-      .then(response => {
-        setSummary(response.data);
-      })
-      .catch(error => {
+    const fetchSummary = async () => {
+      try {
+        const data = await contractService.getSummary();
+        setSummary(data);
+      } catch (error) {
         console.error('There was an error fetching the summary!', error);
         alert('Failed to fetch summary data. Please try again later.');
-      });
+      }
+    };
+    fetchSummary();
   }, []);
 
   if (!summary) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import contractService from './services/contractService';
 import './App.css';
 import { ContractForm } from './components/ContractForm';
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
@@ -31,38 +31,25 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const location = useLocation();
 
-  const fetchContracts = (page: number, tags: string[] = [], search: string = '') => {
-    const skip = (page - 1) * itemsPerPage;
-    const params = new URLSearchParams();
-    params.append('skip', skip.toString());
-    params.append('limit', itemsPerPage.toString());
-    if (tags.length > 0) {
-      params.append('tags', tags.join(','));
+  const fetchContracts = async (page: number, tags: string[] = [], search: string = '') => {
+    try {
+      const data = await contractService.getContracts(page, itemsPerPage, tags, search);
+      setContracts(data.contracts);
+      setTotalContracts(data.total_count);
+    } catch (error) {
+      console.error('There was an error fetching the contracts!', error);
+      alert('Failed to fetch contracts. Please try again later.');
     }
-    if (search) {
-      params.append('search', search);
-    }
-
-    axios.get(`http://127.0.0.1:8000/contracts?${params.toString()}`)
-      .then(response => {
-        setContracts(response.data.contracts);
-        setTotalContracts(response.data.total_count);
-      })
-      .catch(error => {
-        console.error('There was an error fetching the contracts!', error);
-        alert('Failed to fetch contracts. Please try again later.');
-      });
   };
 
-  const fetchTags = () => {
-    axios.get('http://127.0.0.1:8000/tags')
-      .then(response => {
-        setTagOptions(response.data.map((tag: string) => ({ value: tag, label: tag })));
-      })
-      .catch(error => {
-        console.error('There was an error fetching the tags!', error);
-        alert('Failed to fetch tags. Please try again later.');
-      });
+  const fetchTags = async () => {
+    try {
+      const data = await contractService.getTags();
+      setTagOptions(data.map((tag: string) => ({ value: tag, label: tag })));
+    } catch (error) {
+      console.error('There was an error fetching the tags!', error);
+      alert('Failed to fetch tags. Please try again later.');
+    }
   };
 
   useEffect(() => {

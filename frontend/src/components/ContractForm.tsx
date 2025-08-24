@@ -77,6 +77,10 @@ export const ContractForm: React.FC<ContractFormProps> = ({ onContractCreated, c
     }
 
     for (const task of tasks) {
+      if (task.name.trim() === '') {
+        alert('Task name cannot be empty.');
+        return;
+      }
       if (task.amount <= 0) {
         alert('Task amount must be greater than zero.');
         return;

@@ -88,3 +88,8 @@ function App() {
         <Route path="/summary" element={<PrivateRoute><Summary /></PrivateRoute>} />
         <Route path="*" element={<Login />} />
       </Routes>
+    </div>
+  );
+}
+
+export default App;

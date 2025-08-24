@@ -77,7 +77,7 @@ function App() {
               <CloseIcon />
             </IconButton>
           </Typography>
-          <ContractForm onContractCreated={handleContractCreated} showModal={showModal} />
+          <ContractForm onContractCreated={() => setShowModal(false)} showModal={showModal} />
         </Box>
       </Modal>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import type { JSX } from 'react/jsx-runtime';
 import { Navigate } from 'react-router-dom';
 
 interface PrivateRouteProps {

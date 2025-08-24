@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Grid, Card, CardContent, List, ListItem, ListItemText, Chip } from '@mui/material';
+import { Typography, Box, Grid as MuiGrid, Card, CardContent, List, ListItem, ListItemText, Chip } from '@mui/material';
 import contractService from '../services/contractService';
 
 interface SummaryData {
@@ -32,24 +32,24 @@ export const Summary: React.FC = () => {
   return (
     <Box sx={{ mt: 4, mx: 'auto', maxWidth: 800 }}>
       <Typography variant="h4" component="h1" gutterBottom>Contract Summary</Typography>
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={6}>
+      <MuiGrid container spacing={3}>
+        <MuiGrid item xs={12} md={6}>
           <Card variant="outlined">
             <CardContent>
               <Typography variant="h5" component="div">Total Contracts</Typography>
               <Typography variant="h3" color="primary">{summary.total_contracts}</Typography>
             </CardContent>
           </Card>
-        </Grid>
-        <Grid item xs={12} md={6}>
+        </MuiGrid>
+        <MuiGrid item xs={12} md={6}>
           <Card variant="outlined">
             <CardContent>
               <Typography variant="h5" component="div">Total Amount</Typography>
               <Typography variant="h3" color="primary">₹{summary.total_amount.toFixed(2)}</Typography>
             </CardContent>
           </Card>
-        </Grid>
-      </Grid>
+        </MuiGrid>
+      </MuiGrid>
 
       <Card variant="outlined" sx={{ mt: 4 }}>
         <CardContent>

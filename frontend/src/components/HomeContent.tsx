@@ -6,19 +6,7 @@ import Select from 'react-select';
 import { ContractForm } from './ContractForm';
 import { Modal, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-
-interface Task {
-  name: string;
-  amount: number;
-}
-
-interface Contract {
-  id: string;
-  name: string;
-  tasks: Task[];
-  tags: string[];
-  total_amount: number;
-}
+import { Task, Contract } from '../types';
 
 export const HomeContent: React.FC = () => {
   const [contracts, setContracts] = useState<Contract[]>([]);

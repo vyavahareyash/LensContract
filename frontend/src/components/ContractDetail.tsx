@@ -4,19 +4,7 @@ import contractService from '../services/contractService';
 import { Typography, Button, Box, List, ListItem, ListItemText, Chip, Modal, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ContractForm } from './ContractForm';
-
-interface Task {
-  name: string;
-  amount: number;
-}
-
-interface Contract {
-  id: string;
-  name: string;
-  tasks: Task[];
-  tags: string[];
-  total_amount: number;
-}
+import { Task, Contract } from '../types';
 
 export const ContractDetail: React.FC = () => {
   const { contractId } = useParams<{ contractId: string }>();

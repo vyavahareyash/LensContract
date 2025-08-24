@@ -5,11 +5,7 @@ import { TextField, Button, Box, IconButton, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CreatableSelect from 'react-select/creatable';
 import { SingleValue } from 'react-select';
-
-interface Task {
-  name: string;
-  amount: number;
-}
+import { Task, Contract } from '../types';
 
 interface ContractFormProps {
   onContractCreated: () => void;

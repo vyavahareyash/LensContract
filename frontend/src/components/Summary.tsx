@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Typography, Box, Grid as MuiGrid, Card, CardContent, List, ListItem, ListItemText, Chip } from '@mui/material';
 import contractService from '../services/contractService';
-
-interface SummaryData {
-  total_contracts: number;
-  total_amount: number;
-  contracts_by_tags: { [key: string]: number };
-  contracts_by_tasks: { [key: string]: number };
-}
+import { SummaryData } from '../types';
 
 export const Summary: React.FC = () => {
   const [summary, setSummary] = useState<SummaryData | null>(null);

@@ -1,10 +1,24 @@
-from fastapi import FastAPI, Depends, Body
+from fastapi import FastAPI, Depends, Body, HTTPException
 from backend.services.mongo_client import get_db
 from pymongo.database import Database
 from backend.schemas.contract import Contract
-from typing import List
+from typing import List, Dict
+from fastapi.middleware.cors import CORSMiddleware
+from bson import ObjectId
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -51,3 +65,38 @@ def get_tasks(db: Database = Depends(get_db)):
 def get_tags(db: Database = Depends(get_db)):
     tags = db.tags.find()
     return [tag["name"] for tag in tags]
+
+@app.get("/contracts")
+def get_contracts(db: Database = Depends(get_db), skip: int = 0, limit: int = 10):
+    total_count = db.contracts.count_documents({})
+    contracts = []
+    for contract in db.contracts.find().skip(skip).limit(limit):
+        contract["id"] = str(contract["_id"])
+        del contract["_id"]
+        contracts.append(contract)
+    return {"total_count": total_count, "contracts": contracts}
+
+@app.get("/contracts/{contract_id}")
+def get_contract(contract_id: str, db: Database = Depends(get_db)):
+    contract = db.contracts.find_one({"_id": ObjectId(contract_id)})
+    if contract:
+        contract["id"] = str(contract["_id"])
+        del contract["_id"]
+        return contract
+    raise HTTPException(status_code=404, detail="Contract not found")
+
+@app.put("/contracts/{contract_id}")
+def update_contract(contract_id: str, contract: Contract, db: Database = Depends(get_db)):
+    contract_dict = contract.model_dump()
+    contract_dict["total_amount"] = contract.total_amount
+    result = db.contracts.update_one({"_id": ObjectId(contract_id)}, {"$set": contract_dict})
+    if result.modified_count == 1:
+        return {"status": "ok"}
+    raise HTTPException(status_code=404, detail="Contract not found")
+
+@app.delete("/contracts/{contract_id}")
+def delete_contract(contract_id: str, db: Database = Depends(get_db)):
+    result = db.contracts.delete_one({"_id": ObjectId(contract_id)})
+    if result.deleted_count == 1:
+        return {"status": "ok"}
+    raise HTTPException(status_code=404, detail="Contract not found")

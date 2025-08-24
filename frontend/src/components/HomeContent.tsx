@@ -30,6 +30,10 @@ export const HomeContent: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
 
+  const isAuthenticated = () => {
+    return localStorage.getItem('access_token') !== null;
+  };
+
   const fetchContracts = useCallback(async (page: number, tags: string[] = [], search: string = '') => {
     try {
       const data = await contractService.getContracts(page, itemsPerPage, tags, search);
@@ -52,16 +56,22 @@ export const HomeContent: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    fetchTags();
+    if (isAuthenticated()) {
+      fetchTags();
+    }
   }, [fetchTags]);
 
   useEffect(() => {
-    setCurrentPage(1); // Reset page to 1 when filters change
-    fetchContracts(1, selectedTags, searchTerm);
+    if (isAuthenticated()) {
+      setCurrentPage(1); // Reset page to 1 when filters change
+      fetchContracts(1, selectedTags, searchTerm);
+    }
   }, [selectedTags, searchTerm, fetchContracts]);
 
   useEffect(() => {
-    fetchContracts(currentPage, selectedTags, searchTerm);
+    if (isAuthenticated()) {
+      fetchContracts(currentPage, selectedTags, searchTerm);
+    }
   }, [currentPage, selectedTags, searchTerm, fetchContracts]);
 
   const handleContractCreated = () => {

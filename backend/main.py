@@ -67,8 +67,15 @@ def get_tags(db: Database = Depends(get_db)):
     tags = db.tags.find()
     return [tag["name"] for tag in tags]
 
+
 @app.get("/contracts")
-def get_contracts(db: Database = Depends(get_db), skip: int = 0, limit: int = 10, tags: Optional[str] = None, search: Optional[str] = None):
+def get_contracts(
+    db: Database = Depends(get_db),
+    skip: int = 0,
+    limit: int = 10,
+    tags: Optional[str] = None,
+    search: Optional[str] = None,
+):
     query = {}
     if tags:
         query["tags"] = {"$in": tags.split(",")}
@@ -83,6 +90,7 @@ def get_contracts(db: Database = Depends(get_db), skip: int = 0, limit: int = 10
         contracts.append(contract)
     return {"total_count": total_count, "contracts": contracts}
 
+
 @app.get("/contracts/{contract_id}")
 def get_contract(contract_id: str, db: Database = Depends(get_db)):
     contract = db.contracts.find_one({"_id": ObjectId(contract_id)})
@@ -92,14 +100,20 @@ def get_contract(contract_id: str, db: Database = Depends(get_db)):
         return contract
     raise HTTPException(status_code=404, detail="Contract not found")
 
+
 @app.put("/contracts/{contract_id}")
-def update_contract(contract_id: str, contract: Contract, db: Database = Depends(get_db)):
+def update_contract(
+    contract_id: str, contract: Contract, db: Database = Depends(get_db)
+):
     contract_dict = contract.model_dump()
     contract_dict["total_amount"] = contract.total_amount
-    result = db.contracts.update_one({"_id": ObjectId(contract_id)}, {"$set": contract_dict})
+    result = db.contracts.update_one(
+        {"_id": ObjectId(contract_id)}, {"$set": contract_dict}
+    )
     if result.modified_count == 1:
         return {"status": "ok"}
     raise HTTPException(status_code=404, detail="Contract not found")
+
 
 @app.delete("/contracts/{contract_id}")
 def delete_contract(contract_id: str, db: Database = Depends(get_db)):
@@ -107,6 +121,7 @@ def delete_contract(contract_id: str, db: Database = Depends(get_db)):
     if result.deleted_count == 1:
         return {"status": "ok"}
     raise HTTPException(status_code=404, detail="Contract not found")
+
 
 @app.get("/summary")
 def get_summary(db: Database = Depends(get_db)):
@@ -119,17 +134,23 @@ def get_summary(db: Database = Depends(get_db)):
 
     contracts_by_tags_pipeline = [
         {"$unwind": "$tags"},
-        {"$group": {"_id": "$tags", "count": {"$sum": 1}}}
+        {"$group": {"_id": "$tags", "count": {"$sum": 1}}},
     ]
     contracts_by_tags_result = list(db.contracts.aggregate(contracts_by_tags_pipeline))
-    contracts_by_tags = {item["_id"]: item["count"] for item in contracts_by_tags_result}
+    contracts_by_tags = {
+        item["_id"]: item["count"] for item in contracts_by_tags_result
+    }
 
     contracts_by_tasks_pipeline = [
         {"$unwind": "$tasks"},
-        {"$group": {"_id": "$tasks.name", "count": {"$sum": 1}}}
+        {"$group": {"_id": "$tasks.name", "count": {"$sum": 1}}},
     ]
-    contracts_by_tasks_result = list(db.contracts.aggregate(contracts_by_tasks_pipeline))
-    contracts_by_tasks = {item["_id"]: item["count"] for item in contracts_by_tasks_result}
+    contracts_by_tasks_result = list(
+        db.contracts.aggregate(contracts_by_tasks_pipeline)
+    )
+    contracts_by_tasks = {
+        item["_id"]: item["count"] for item in contracts_by_tasks_result
+    }
 
     return {
         "total_contracts": total_contracts,

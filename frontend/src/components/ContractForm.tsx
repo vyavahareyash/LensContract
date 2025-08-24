@@ -70,6 +70,19 @@ export const ContractForm: React.FC<ContractFormProps> = ({ onContractCreated, c
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
+
+    if (tasks.length === 0) {
+      alert('Please add at least one task.');
+      return;
+    }
+
+    for (const task of tasks) {
+      if (task.amount <= 0) {
+        alert('Task amount must be greater than zero.');
+        return;
+      }
+    }
+
     const contractData = { name, tasks, tags };
     const token = localStorage.getItem('access_token');
     const config = {

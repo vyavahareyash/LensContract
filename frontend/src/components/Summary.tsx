@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Grid as MuiGrid, Card, CardContent, List, ListItem, ListItemText, Chip } from '@mui/material';
+import { Typography, Box, Card, CardContent, List, ListItem, ListItemText, Chip } from '@mui/material';
 import contractService from '../services/contractService';
 import { SummaryData } from '../types';
 
@@ -26,24 +26,24 @@ export const Summary: React.FC = () => {
   return (
     <Box sx={{ mt: 4, mx: 'auto', maxWidth: 800 }}>
       <Typography variant="h4" component="h1" gutterBottom>Contract Summary</Typography>
-      <MuiGrid container spacing={3}>
-        <MuiGrid item xs={12} md={6}>
+      <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', mb: 3 }}>
+        <Box sx={{ flex: '1 1 300px', minWidth: 250 }}>
           <Card variant="outlined">
             <CardContent>
               <Typography variant="h5" component="div">Total Contracts</Typography>
               <Typography variant="h3" color="primary">{summary.total_contracts}</Typography>
             </CardContent>
           </Card>
-        </MuiGrid>
-        <MuiGrid item xs={12} md={6}>
+        </Box>
+        <Box sx={{ flex: '1 1 300px', minWidth: 250 }}>
           <Card variant="outlined">
             <CardContent>
               <Typography variant="h5" component="div">Total Amount</Typography>
               <Typography variant="h3" color="primary">₹{summary.total_amount.toFixed(2)}</Typography>
             </CardContent>
           </Card>
-        </MuiGrid>
-      </MuiGrid>
+        </Box>
+      </Box>
 
       <Card variant="outlined" sx={{ mt: 4 }}>
         <CardContent>

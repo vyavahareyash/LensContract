@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import contractService from '../services/contractService';
-import { Box, Grid as MuiGrid, TextField, Card, CardContent, Pagination, Typography, Button } from '@mui/material';
+import { Box, TextField, Card, CardContent, Pagination, Typography, Button } from '@mui/material';
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import { ContractForm } from './ContractForm';
@@ -111,8 +111,8 @@ export const HomeContent: React.FC = () => {
           <ContractForm onContractCreated={handleContractCreated} showModal={showModal} />
         </Box>
       </Modal>
-      <MuiGrid container spacing={2} sx={{ mb: 4 }}>
-        <MuiGrid item xs={12} md={6}>
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 4 }}>
+        <Box sx={{ flex: '1 1 300px', minWidth: 250 }}>
           <TextField
             fullWidth
             label="Search by name..."
@@ -120,19 +120,19 @@ export const HomeContent: React.FC = () => {
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
           />
-        </MuiGrid>
-        <MuiGrid item xs={12} md={6}>
+        </Box>
+        <Box sx={{ flex: '1 1 300px', minWidth: 250 }}>
           <Select
             isMulti
             options={tagOptions}
             onChange={selectedOptions => setSelectedTags(selectedOptions.map(option => option.value))}
             placeholder="Filter by tags..."
           />
-        </MuiGrid>
-      </MuiGrid>
-      <MuiGrid container spacing={2} sx={{ mt: 2 }}>
+        </Box>
+      </Box>
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
         {contracts.map(contract => (
-          <MuiGrid item xs={12} sm={6} md={4} lg={3} key={contract.id}>
+          <Box key={contract.id} sx={{ flex: '1 1 220px', minWidth: 220, maxWidth: 350 }}>
             <Link to={`/contracts/${contract.id}`} style={{ textDecoration: 'none' }}>
               <Card variant="outlined">
                 <CardContent>
@@ -145,9 +145,9 @@ export const HomeContent: React.FC = () => {
                 </CardContent>
               </Card>
             </Link>
-          </MuiGrid>
+          </Box>
         ))}
-      </MuiGrid>
+      </Box>
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <Pagination
           count={totalPages}
